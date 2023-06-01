@@ -1,20 +1,14 @@
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aallam.openai.api.BetaOpenAI
@@ -26,8 +20,6 @@ import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIConfig
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import kotlin.time.Duration.Companion.minutes
@@ -42,7 +34,29 @@ val openAI = OpenAI(
 @Composable
 fun App() {
     MaterialTheme {
-        ChatScreen(remember { ChatScreenStateHolder() })
+        Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
+                TypeButton("notion_logo.xml", true)
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            ChatScreen(remember { ChatScreenStateHolder() })
+        }
+    }
+}
+
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+private fun TypeButton(resource: String, isSelected: Boolean) {
+    val boredColor = remember(isSelected) { if (isSelected) Color.Black else Color.Gray }
+    Box(
+        Modifier.border(1.dp, boredColor, RoundedCornerShape(size = 4.dp)).padding(4.dp)
+    ) {
+        Image(
+            painter = painterResource(resource),
+            contentDescription = null,
+            modifier = Modifier.size(48.dp)
+        )
     }
 }
 
@@ -73,7 +87,7 @@ class ChatScreenStateHolder {
 private fun ChatScreen(stateHolder: ChatScreenStateHolder) {
     // TODO add buttons at the top which changes the "Content"
     Column(
-        Modifier.fillMaxSize().padding(horizontal = 8.dp),
+        Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
