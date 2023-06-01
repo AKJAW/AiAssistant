@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,15 +42,35 @@ val openAI = OpenAI(
 @Composable
 fun App() {
     MaterialTheme {
-        ChatScreen()
+        ChatScreen(remember { ChatScreenStateHolder() })
+    }
+}
+
+// TODO add rememberSaveable
+class ChatScreenStateHolder {
+
+    var userMessage: String by mutableStateOf("")
+        private set
+    val count by derivedStateOf {
+        // TODO count tokens?
+        userMessage.count()
+    }
+
+    private val mutableMessages = mutableStateListOf<String>()
+    val messages: List<String> = mutableMessages
+
+    fun updateUserMessage(message: String) {
+        userMessage = message
+    }
+
+    fun sendMessage() {
+        mutableMessages.add(userMessage)
+        userMessage = ""
     }
 }
 
 @Composable
-private fun ChatScreen() {
-    var userMessage by remember { mutableStateOf("") }
-    val messages =
-        remember { mutableStateListOf<String>() }
+private fun ChatScreen(stateHolder: ChatScreenStateHolder) {
     // TODO add buttons at the top which changes the "Content"
     Column(
         Modifier.fillMaxSize().padding(horizontal = 8.dp),
@@ -66,7 +87,7 @@ private fun ChatScreen() {
             item {
                 Spacer(modifier = Modifier.height(8.dp))
             }
-            itemsIndexed(items = messages, key = { index, _ -> index }) { index, message ->
+            itemsIndexed(items = stateHolder.messages, key = { index, _ -> index }) { index, message ->
                 val background = if (index % 2 == 1) Color(0xFFC9E6C4) else Color.White
                 Card(modifier = Modifier.fillMaxWidth(), backgroundColor = background) {
                     Text(message, modifier = Modifier.fillMaxWidth().padding(8.dp))
@@ -74,12 +95,10 @@ private fun ChatScreen() {
             }
         }
         ChatInput(
-            userMessage = userMessage,
-            setUserMessage = { userMessage = it },
-            onSend = {
-                messages.add(userMessage)
-                userMessage = ""
-                     },
+            userMessage = stateHolder.userMessage,
+            setUserMessage = stateHolder::updateUserMessage,
+            count = stateHolder.count,
+            onSend = stateHolder::sendMessage,
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
@@ -89,6 +108,7 @@ private fun ChatScreen() {
 private fun ChatInput(
     userMessage: String,
     setUserMessage: (String) -> Unit,
+    count: Int,
     onSend: () -> Unit,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -103,9 +123,8 @@ private fun ChatInput(
             Button(onClick = onSend) {
                 Text("Send")
             }
-            // TODO count tokens?
             Text(
-                text = userMessage.count().toString(),
+                text = count.toString(),
                 style = MaterialTheme.typography.body2.copy(fontSize = 10.sp),
             )
         }
