@@ -3,9 +3,11 @@ plugins {
     kotlin("native.cocoapods")
     id("com.android.library")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.20"
 }
 
 kotlin {
+    val ktorVersion = extra["ktor.version"] as String
     android()
 
     jvm("desktop")
@@ -36,6 +38,11 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
                 implementation("com.aallam.openai:openai-client:3.2.0")
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-client-logging:$ktorVersion")
+                implementation("io.ktor:ktor-client-json:$ktorVersion")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
             }
         }
         val androidMain by getting {
@@ -43,7 +50,8 @@ kotlin {
                 api("androidx.activity:activity-compose:1.6.1")
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.9.0")
-                implementation("io.ktor:ktor-client-okhttp:2.3.0")
+                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+                implementation("ch.qos.logback:logback-classic:1.2.11")
             }
         }
         val iosX64Main by getting
@@ -55,13 +63,13 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
-                implementation("io.ktor:ktor-client-darwin:2.3.0")
+                implementation("io.ktor:ktor-client-darwin:$ktorVersion")
             }
         }
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
-                implementation("io.ktor:ktor-client-okhttp:2.3.0")
+                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
             }
         }
     }

@@ -20,6 +20,26 @@ import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIConfig
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import kotlinx.serialization.encodeToString
+import io.ktor.client.request.headers
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.client.utils.EmptyContent.contentType
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import kotlin.time.Duration.Companion.minutes
@@ -34,13 +54,14 @@ val openAI = OpenAI(
 @Composable
 fun App() {
     MaterialTheme {
+        val scope = rememberCoroutineScope()
         Column(modifier = Modifier.padding(horizontal = 8.dp)) {
             Spacer(modifier = Modifier.height(4.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
                 TypeButton("notion_logo.xml", true)
             }
             Spacer(modifier = Modifier.height(4.dp))
-            ChatScreen(remember { ChatScreenStateHolder() })
+            ChatScreen(remember { ChatScreenStateHolder(scope) })
         }
     }
 }
@@ -60,8 +81,50 @@ private fun TypeButton(resource: String, isSelected: Boolean) {
     }
 }
 
+// TODO fix logger
+val ktorClient = HttpClient {
+    install(Logging) {
+        level = LogLevel.ALL
+        logger = Logger.DEFAULT
+    }
+    install(ContentNegotiation) {
+        json()
+    }
+    defaultRequest {
+        url(Endpoints.AddTask.URL)
+        headers {
+            set("authorization", Endpoints.AddTask.AUTH)
+        }
+    }
+}
+
+val jsonSerialization = Json {
+    prettyPrint = true
+    isLenient = true
+}
+
+class AddTask(
+    private val client: HttpClient = ktorClient,
+    private val json: Json = jsonSerialization,
+) {
+
+    @Serializable
+    data class Request(val task: String)
+
+    suspend fun execute(task: String): String {
+        val response = client.post {
+            contentType(ContentType.Application.Json)
+            setBody(json.encodeToString(Request(task)))
+        }
+        return response.bodyAsText()
+    }
+}
+
 // TODO add rememberSaveable
-class ChatScreenStateHolder {
+class ChatScreenStateHolder(
+    private val coroutineScope: CoroutineScope,
+    private val addTask: AddTask = AddTask()
+) {
 
     var userMessage: String by mutableStateOf("")
         private set
@@ -78,8 +141,13 @@ class ChatScreenStateHolder {
     }
 
     fun sendMessage() {
-        mutableMessages.add(userMessage)
+        val message = userMessage
+        mutableMessages.add(message)
         userMessage = ""
+        coroutineScope.launch {
+            val response = addTask.execute(message)
+            mutableMessages.add(response)
+        }
     }
 }
 
