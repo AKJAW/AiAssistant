@@ -1,15 +1,18 @@
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,20 +50,24 @@ private fun ChatScreen() {
     var userMessage by remember { mutableStateOf("") }
     val messages =
         remember { mutableStateListOf<String>() }
-    // TODO extract screen
-    // TODO extract input?
     // TODO add buttons at the top which changes the "Content"
     Column(
-        Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+        Modifier.fillMaxSize().padding(horizontal = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyColumn(
+            modifier = Modifier.weight(1f)
+                .fillMaxWidth()
+                .border(1.dp, Color.Gray, shape = RoundedCornerShape(size = 4.dp))
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             item {
                 Spacer(modifier = Modifier.height(8.dp))
             }
             itemsIndexed(items = messages, key = { index, _ -> index }) { index, message ->
-                val background = if (index % 2 == 1) Color.LightGray else Color.White
+                val background = if (index % 2 == 1) Color(0xFFC9E6C4) else Color.White
                 Card(modifier = Modifier.fillMaxWidth(), backgroundColor = background) {
                     Text(message, modifier = Modifier.fillMaxWidth().padding(8.dp))
                 }
@@ -69,7 +76,10 @@ private fun ChatScreen() {
         ChatInput(
             userMessage = userMessage,
             setUserMessage = { userMessage = it },
-            onSend = { },
+            onSend = {
+                messages.add(userMessage)
+                userMessage = ""
+                     },
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
