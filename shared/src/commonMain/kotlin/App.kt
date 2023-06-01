@@ -23,26 +23,25 @@ import com.aallam.openai.client.OpenAIConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
-import kotlinx.serialization.encodeToString
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
-import io.ktor.client.utils.EmptyContent.contentType
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import kotlin.time.Duration.Companion.minutes
+import co.touchlab.kermit.Logger.Companion as KermitLogger
 
 val openAI = OpenAI(
     OpenAIConfig(
@@ -81,11 +80,14 @@ private fun TypeButton(resource: String, isSelected: Boolean) {
     }
 }
 
-// TODO fix logger
 val ktorClient = HttpClient {
     install(Logging) {
         level = LogLevel.ALL
-        logger = Logger.DEFAULT
+        logger = object: Logger {
+            override fun log(message: String) {
+                KermitLogger.i(tag = "Ktor") { message }
+            }
+        }
     }
     install(ContentNegotiation) {
         json()

@@ -43,6 +43,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-json:$ktorVersion")
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation("co.touchlab:kermit:2.0.0-RC4")
             }
         }
         val androidMain by getting {
@@ -51,7 +52,6 @@ kotlin {
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.9.0")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
-                implementation("ch.qos.logback:logback-classic:1.2.11")
             }
         }
         val iosX64Main by getting
