@@ -23,6 +23,7 @@ import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIConfig
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -93,6 +94,11 @@ val ktorClient = HttpClient {
     }
     install(ContentNegotiation) {
         json()
+    }
+    install(HttpTimeout) {
+        requestTimeoutMillis = 30_000
+        connectTimeoutMillis = 30_000
+        socketTimeoutMillis = 30_000
     }
     defaultRequest {
         url(Endpoints.AddTask.URL)
