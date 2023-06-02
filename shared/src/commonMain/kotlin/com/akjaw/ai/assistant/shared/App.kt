@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -13,15 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.aallam.openai.api.BetaOpenAI
-import com.aallam.openai.api.chat.ChatCompletion
-import com.aallam.openai.api.chat.ChatCompletionRequest
-import com.aallam.openai.api.chat.ChatMessage
-import com.aallam.openai.api.chat.ChatRole
-import com.aallam.openai.api.http.Timeout
-import com.aallam.openai.api.model.ModelId
-import com.aallam.openai.client.OpenAI
-import com.aallam.openai.client.OpenAIConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -34,6 +26,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
@@ -43,15 +36,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import kotlin.time.Duration.Companion.minutes
 import co.touchlab.kermit.Logger.Companion as KermitLogger
-
-val openAI = OpenAI(
-    OpenAIConfig(
-        token = OpenAiSecret.apiKey,
-        timeout = Timeout(request = 2.minutes, connect = 2.minutes, socket = 2.minutes)
-    )
-)
 
 @Composable
 fun App() {
@@ -86,7 +71,7 @@ private fun TypeButton(resource: String, isSelected: Boolean) {
 val ktorClient = HttpClient {
     install(Logging) {
         level = LogLevel.ALL
-        logger = object: Logger {
+        logger = object : Logger {
             override fun log(message: String) {
                 KermitLogger.i(tag = "Ktor") { message }
             }
@@ -113,6 +98,20 @@ val jsonSerialization = Json {
     isLenient = true
 }
 
+sealed interface ChatMessage {
+
+    val message: String
+
+    data class User(override val message: String) : ChatMessage
+
+    sealed interface Api : ChatMessage {
+
+        data class Success(override val message: String) : Api
+
+        data class Error(override val message: String) : Api
+    }
+}
+
 class AddTask(
     private val client: HttpClient = ktorClient,
     private val json: Json = jsonSerialization,
@@ -121,12 +120,17 @@ class AddTask(
     @Serializable
     data class Request(val task: String)
 
-    suspend fun execute(task: String): String {
+    suspend fun execute(task: String): ChatMessage {
         val response = client.post {
             contentType(ContentType.Application.Json)
             setBody(json.encodeToString(Request(task)))
         }
-        return response.bodyAsText()
+
+        return if (response.status == HttpStatusCode.OK) {
+            ChatMessage.Api.Success(response.bodyAsText())
+        } else {
+            ChatMessage.Api.Error(response.bodyAsText())
+        }
     }
 }
 
@@ -143,8 +147,8 @@ class ChatScreenStateHolder(
         userMessage.count()
     }
 
-    private val mutableMessages = mutableStateListOf<String>()
-    val messages: List<String> = mutableMessages
+    private val mutableMessages = mutableStateListOf<ChatMessage>()
+    val messages: List<ChatMessage> = mutableMessages
 
     fun updateUserMessage(message: String) {
         userMessage = message
@@ -152,7 +156,7 @@ class ChatScreenStateHolder(
 
     fun sendMessage() {
         val message = userMessage
-        mutableMessages.add(message)
+        mutableMessages.add(ChatMessage.User(message))
         userMessage = ""
         coroutineScope.launch {
             val response = addTask.execute(message)
@@ -179,10 +183,17 @@ private fun ChatScreen(stateHolder: ChatScreenStateHolder) {
             item {
                 Spacer(modifier = Modifier.height(8.dp))
             }
-            itemsIndexed(items = stateHolder.messages, key = { index, _ -> index }) { index, message ->
-                val background = if (index % 2 == 1) Color(0xFFC9E6C4) else Color.White
+            items(
+                items = stateHolder.messages,
+                key = { it.toString() }
+            ) {message ->
+                val background = when (message) {
+                    is ChatMessage.User -> Color.White
+                    is ChatMessage.Api.Error -> Color(0xFFFF7878)
+                    is ChatMessage.Api.Success -> Color(0xFFC9E6C4)
+                }
                 Card(modifier = Modifier.fillMaxWidth(), backgroundColor = background) {
-                    Text(message, modifier = Modifier.fillMaxWidth().padding(8.dp))
+                    Text(message.message, modifier = Modifier.fillMaxWidth().padding(8.dp))
                 }
             }
         }
@@ -221,21 +232,6 @@ private fun ChatInput(
             )
         }
     }
-}
-
-@OptIn(BetaOpenAI::class)
-private suspend fun askChatGpt(message: String): String? {
-    val chatCompletionRequest = ChatCompletionRequest(
-        model = ModelId("gpt-3.5-turbo"),
-        messages = listOf(
-            ChatMessage(
-                role = ChatRole.User,
-                content = message
-            )
-        )
-    )
-    val completion: ChatCompletion = openAI.chatCompletion(chatCompletionRequest)
-    return completion.choices.first().message?.content
 }
 
 expect fun getPlatformName(): String
