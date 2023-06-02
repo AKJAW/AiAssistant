@@ -10,8 +10,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
@@ -146,6 +149,8 @@ class ChatScreenStateHolder(
         // TODO count tokens?
         userMessage.count()
     }
+    var isLoading: Boolean by mutableStateOf(false)
+        private set
 
     private val mutableMessages = mutableStateListOf<ChatMessage>()
     val messages: List<ChatMessage> = mutableMessages
@@ -158,9 +163,11 @@ class ChatScreenStateHolder(
         val message = userMessage
         mutableMessages.add(ChatMessage.User(message))
         userMessage = ""
+        isLoading = true
         coroutineScope.launch {
             val response = addTask.execute(message)
             mutableMessages.add(response)
+            isLoading = false
         }
     }
 }
@@ -183,10 +190,10 @@ private fun ChatScreen(stateHolder: ChatScreenStateHolder) {
             item {
                 Spacer(modifier = Modifier.height(8.dp))
             }
-            items(
+            itemsIndexed(
                 items = stateHolder.messages,
-                key = { it.toString() }
-            ) {message ->
+                key = { index, _ -> index }
+            ) { _, message ->
                 val background = when (message) {
                     is ChatMessage.User -> Color.White
                     is ChatMessage.Api.Error -> Color(0xFFFF7878)
@@ -202,28 +209,39 @@ private fun ChatScreen(stateHolder: ChatScreenStateHolder) {
             setUserMessage = stateHolder::updateUserMessage,
             count = stateHolder.count,
             onSend = stateHolder::sendMessage,
+            isEnabled = stateHolder.isLoading.not(),
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ChatInput(
     userMessage: String,
     setUserMessage: (String) -> Unit,
     count: Int,
     onSend: () -> Unit,
+    isEnabled: Boolean,
 ) {
+    val focusManager = LocalFocusManager.current
     Row(verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(
             value = userMessage,
             onValueChange = setUserMessage,
             modifier = Modifier.weight(1f),
             maxLines = 10,
+            enabled = isEnabled
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = onSend) {
+            Button(
+                onClick = {
+                    focusManager.clearFocus()
+                    onSend()
+                },
+                enabled = isEnabled
+            ) {
                 Text("Send")
             }
             Text(
