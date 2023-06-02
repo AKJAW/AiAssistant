@@ -40,7 +40,7 @@ import co.touchlab.kermit.Logger.Companion as KermitLogger
 
 @Composable
 fun App() {
-    MaterialTheme {
+    MaterialTheme(colors = MaterialTheme.colors.copy(primary = Color(0xFF4E7DF8))) {
         val scope = rememberCoroutineScope()
         Column(modifier = Modifier.padding(horizontal = 8.dp)) {
             Spacer(modifier = Modifier.height(4.dp))
