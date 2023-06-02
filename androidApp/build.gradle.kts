@@ -2,6 +2,8 @@ plugins {
     kotlin("multiplatform")
     id("com.android.application")
     id("org.jetbrains.compose")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 kotlin {
@@ -10,6 +12,9 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(project(":shared"))
+                implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
+                implementation("com.google.firebase:firebase-crashlytics-ktx")
+                implementation("com.google.firebase:firebase-analytics-ktx")
             }
         }
     }
