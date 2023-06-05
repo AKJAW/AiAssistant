@@ -3,12 +3,12 @@ package com.akjaw.ai.assistant.shared
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.akjaw.ai.assistant.shared.dashboard.ui.Dashboard
+import com.akjaw.ai.assistant.shared.dashboard.ui.DashboardScreen
 
 @Composable
 fun App() {
     MaterialTheme(colors = MaterialTheme.colors.copy(primary = Color(0xFF4E7DF8))) {
-        Dashboard()
+        DashboardScreen()
     }
 }
 
