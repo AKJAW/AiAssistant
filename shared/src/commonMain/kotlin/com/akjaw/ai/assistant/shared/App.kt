@@ -46,8 +46,20 @@ fun App() {
         val scope = rememberCoroutineScope()
         Column(modifier = Modifier.padding(horizontal = 8.dp)) {
             Spacer(modifier = Modifier.height(4.dp))
-            Row(modifier = Modifier.fillMaxWidth()) {
-                TypeButton("notion_logo.xml", true)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                TypeButton(
+                    selectedResource = "notion_logo.xml",
+                    unselectedResource = "notion_logo_unselected.xml",
+                    isSelected = true
+                )
+                TypeButton(
+                    selectedResource = "ticktick.xml",
+                    unselectedResource = "ticktick_unselected.xml",
+                    isSelected = false
+                )
             }
             Spacer(modifier = Modifier.height(4.dp))
             ChatScreen(remember { ChatScreenStateHolder(scope) })
@@ -56,13 +68,18 @@ fun App() {
 }
 
 @Composable
-private fun TypeButton(resource: String, isSelected: Boolean) {
-    val boredColor = remember(isSelected) { if (isSelected) Color.Black else Color.Gray }
+private fun TypeButton(
+    selectedResource: String,
+    unselectedResource: String,
+    isSelected: Boolean
+) {
+    val borderColor = remember(isSelected) { if (isSelected) Color.Black else Color.Gray }
+    val icon = remember(isSelected) { if (isSelected) selectedResource else unselectedResource }
     Box(
-        Modifier.border(1.dp, boredColor, RoundedCornerShape(size = 4.dp)).padding(4.dp)
+        Modifier.border(1.dp, borderColor, RoundedCornerShape(size = 4.dp)).padding(4.dp)
     ) {
         Image(
-            painter = painterResource(resource),
+            painter = painterResource(icon),
             contentDescription = null,
             modifier = Modifier.size(48.dp)
         )
