@@ -38,7 +38,7 @@ fun ChatScreen(stateHolder: ChatScreenStateHolder) {
     Column(
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         LazyColumn(
             modifier = Modifier.weight(1f)
@@ -47,9 +47,6 @@ fun ChatScreen(stateHolder: ChatScreenStateHolder) {
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-            }
             itemsIndexed(
                 items = stateHolder.messages,
                 key = { index, _ -> index }
@@ -89,7 +86,7 @@ fun ChatScreen(stateHolder: ChatScreenStateHolder) {
             onSend = stateHolder::sendMessage,
             isEnabled = stateHolder.isLoading.not(),
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
     }
 }
 

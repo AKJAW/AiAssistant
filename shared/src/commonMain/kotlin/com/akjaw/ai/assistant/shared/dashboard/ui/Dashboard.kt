@@ -1,5 +1,6 @@
 package com.akjaw.ai.assistant.shared.dashboard.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,7 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,25 +28,46 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.akjaw.ai.assistant.shared.chat.domain.AddTaskFactory
 import com.akjaw.ai.assistant.shared.chat.presentation.ChatScreenStateHolder
 import com.akjaw.ai.assistant.shared.chat.ui.ChatScreen
 import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 
-class DashboardScreenStateHolder {
+// TODO add rememberSaveable
+@OptIn(ExperimentalFoundationApi::class)
+class DashboardScreenStateHolder(
+    private val scope: CoroutineScope,
+    private val pagerState: PagerState,
+    private val addTaskFactory: AddTaskFactory = AddTaskFactory(),
+) {
+
+    var stateHolders: List<ChatScreenStateHolder> by mutableStateOf(
+        ChatType.values().map { type ->
+            ChatScreenStateHolder(type, scope, addTaskFactory.create(type))
+        }
+    )
 
     var currentChatType: ChatType by mutableStateOf(ChatType.Notion)
         private set
 
     fun setType(newChatType: ChatType) {
+        val index = stateHolders.indexOfFirst { it.type == newChatType }
+        scope.launch {
+            pagerState.scrollToPage(index)
+        }
         currentChatType = newChatType
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DashboardScreen() {
     val scope = rememberCoroutineScope()
-    val dashboardScreenStateHolder = remember { DashboardScreenStateHolder() }
+    val pagerState = rememberPagerState()
+    val dashboardScreenStateHolder = remember { DashboardScreenStateHolder(scope, pagerState) }
     Column(modifier = Modifier.padding(horizontal = 8.dp)) {
         Spacer(modifier = Modifier.height(4.dp))
         Row(
@@ -57,7 +83,16 @@ fun DashboardScreen() {
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
-        ChatScreen(remember { ChatScreenStateHolder(scope) })
+        HorizontalPager(
+            pageCount = dashboardScreenStateHolder.stateHolders.count(),
+            state = pagerState,
+            userScrollEnabled = false,
+        ) { pageNumber ->
+            val stateHolder = dashboardScreenStateHolder.stateHolders[pageNumber]
+            Text(pageNumber.toString())
+            ChatScreen(stateHolder)
+        }
+        Spacer(modifier = Modifier.height(4.dp))
     }
 }
 
