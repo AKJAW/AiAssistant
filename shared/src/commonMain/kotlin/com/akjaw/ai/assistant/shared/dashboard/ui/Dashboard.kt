@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package com.akjaw.ai.assistant.shared.dashboard.ui
 
 import androidx.compose.foundation.Image
@@ -22,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.akjaw.ai.assistant.shared.chat.presentation.ChatScreenStateHolder
 import com.akjaw.ai.assistant.shared.chat.ui.ChatScreen
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

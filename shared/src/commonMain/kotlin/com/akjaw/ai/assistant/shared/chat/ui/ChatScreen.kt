@@ -30,10 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
 import com.akjaw.ai.assistant.shared.chat.presentation.ChatScreenStateHolder
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
-@ExperimentalResourceApi
 @Composable
 fun ChatScreen(stateHolder: ChatScreenStateHolder) {
     // TODO add buttons at the top which changes the "Content"
