@@ -89,7 +89,6 @@ fun DashboardScreen() {
             userScrollEnabled = false,
         ) { pageNumber ->
             val stateHolder = dashboardScreenStateHolder.stateHolders[pageNumber]
-            Text(pageNumber.toString())
             ChatScreen(stateHolder)
         }
         Spacer(modifier = Modifier.height(4.dp))

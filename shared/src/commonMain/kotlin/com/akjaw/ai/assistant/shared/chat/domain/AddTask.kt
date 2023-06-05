@@ -41,10 +41,7 @@ private val ktorClient = HttpClient {
         socketTimeoutMillis = 30_000
     }
     defaultRequest {
-        url(Endpoints.AddTaskNotion.URL)
-        headers {
-            set("authorization", Endpoints.AddTaskNotion.AUTH)
-        }
+        contentType(ContentType.Application.Json)
     }
 }
 
@@ -64,22 +61,8 @@ interface AddTask {
 class AddTaskFactory {
 
     fun create(chatType: ChatType) = when (chatType) {
-        ChatType.Notion -> FakeAddNotionTask()
-        ChatType.TickTick -> FakeAddTickTickTask()
-    }
-}
-
-class FakeAddNotionTask : AddTask {
-
-    override suspend fun execute(task: String): ChatMessage {
-        return ChatMessage.Api.Success("Notion $task")
-    }
-}
-
-class FakeAddTickTickTask : AddTask {
-
-    override suspend fun execute(task: String): ChatMessage {
-        return ChatMessage.Api.Success("TickTick $task")
+        ChatType.Notion -> AddNotionTask()
+        ChatType.TickTick -> AddTickTickTask()
     }
 }
 
@@ -89,8 +72,31 @@ class AddNotionTask(
 ) : AddTask {
 
     override suspend fun execute(task: String): ChatMessage {
-        val response = client.post {
-            contentType(ContentType.Application.Json)
+        val response = client.post(Endpoints.AddTaskNotion.URL) {
+            headers {
+                set("authorization", Endpoints.AddTaskNotion.AUTH)
+            }
+            setBody(json.encodeToString(AddTask.Request(task)))
+        }
+
+        return if (response.status == HttpStatusCode.OK) {
+            ChatMessage.Api.Success(response.bodyAsText())
+        } else {
+            ChatMessage.Api.Error(response.bodyAsText())
+        }
+    }
+}
+
+class AddTickTickTask(
+    private val client: HttpClient = ktorClient,
+    private val json: Json = jsonSerialization,
+) : AddTask {
+
+    override suspend fun execute(task: String): ChatMessage {
+        val response = client.post(Endpoints.AddTaskTickTick.URL) {
+            headers {
+                set("authorization", Endpoints.AddTaskTickTick.AUTH)
+            }
             setBody(json.encodeToString(AddTask.Request(task)))
         }
 
