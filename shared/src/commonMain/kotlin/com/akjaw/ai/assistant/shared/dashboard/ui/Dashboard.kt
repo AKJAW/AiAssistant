@@ -25,20 +25,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.akjaw.ai.assistant.shared.chat.presentation.ChatScreenStateHolder
 import com.akjaw.ai.assistant.shared.chat.ui.ChatScreen
+import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
 import org.jetbrains.compose.resources.painterResource
 
 class DashboardScreenStateHolder {
 
-    enum class Type(val selectedResource: String, val unselectedResource: String) {
-        Notion("notion_logo.xml", "notion_logo_unselected.xml"),
-        TickTick("ticktick.xml", "ticktick_unselected.xml"),
-    }
-
-    var currentType: Type by mutableStateOf(Type.Notion)
+    var currentChatType: ChatType by mutableStateOf(ChatType.Notion)
         private set
 
-    fun setType(newType: Type) {
-        currentType = newType
+    fun setType(newChatType: ChatType) {
+        currentChatType = newChatType
     }
 }
 
@@ -52,11 +48,11 @@ fun DashboardScreen() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            DashboardScreenStateHolder.Type.values().forEach { type ->
+            ChatType.values().forEach { type ->
                 TypeButton(
-                    type = type,
+                    chatType = type,
                     onClick = { dashboardScreenStateHolder.setType(type) },
-                    isSelected = dashboardScreenStateHolder.currentType == type
+                    isSelected = dashboardScreenStateHolder.currentChatType == type
                 )
             }
         }
@@ -67,13 +63,13 @@ fun DashboardScreen() {
 
 @Composable
 private fun TypeButton(
-    type: DashboardScreenStateHolder.Type,
+    chatType: ChatType,
     onClick: () -> Unit,
     isSelected: Boolean,
 ) {
     val borderColor = remember(isSelected) { if (isSelected) Color.Black else Color.Gray }
     val icon = remember(isSelected) {
-        if (isSelected) type.selectedResource else type.unselectedResource
+        if (isSelected) chatType.selectedResource else chatType.unselectedResource
     }
     Box(
         Modifier

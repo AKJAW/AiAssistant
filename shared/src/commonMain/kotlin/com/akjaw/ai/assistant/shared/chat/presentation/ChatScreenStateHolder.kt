@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.akjaw.ai.assistant.shared.chat.domain.AddTask
+import com.akjaw.ai.assistant.shared.chat.domain.AddNotionTask
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 // TODO add rememberSaveable
 class ChatScreenStateHolder(
     private val coroutineScope: CoroutineScope,
-    private val addTask: AddTask = AddTask()
+    private val addNotionTask: AddNotionTask = AddNotionTask()
 ) {
 
     var userMessage: String by mutableStateOf("")
@@ -38,7 +38,7 @@ class ChatScreenStateHolder(
         userMessage = ""
         isLoading = true
         coroutineScope.launch {
-            val response = addTask.execute(message)
+            val response = addNotionTask.execute(message)
             mutableMessages.add(response)
             isLoading = false
         }
@@ -51,7 +51,7 @@ class ChatScreenStateHolder(
             mutableMessages.add(secondToLastMessage)
             isLoading = true
             coroutineScope.launch {
-                val response = addTask.execute(secondToLastMessage.message)
+                val response = addNotionTask.execute(secondToLastMessage.message)
                 mutableMessages.add(response)
                 isLoading = false
             }

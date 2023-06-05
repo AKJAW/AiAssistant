@@ -2,6 +2,7 @@ package com.akjaw.ai.assistant.shared.chat.domain
 
 import com.akjaw.ai.assistant.shared.Endpoints
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
+import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -52,18 +53,45 @@ private val jsonSerialization = Json {
     isLenient = true
 }
 
-class AddTask(
-    private val client: HttpClient = ktorClient,
-    private val json: Json = jsonSerialization,
-) {
+interface AddTask {
 
     @Serializable
     data class Request(val task: String)
 
-    suspend fun execute(task: String): ChatMessage {
+    suspend fun execute(task: String): ChatMessage
+}
+
+class AddTaskFactory {
+
+    fun create(chatType: ChatType) = when (chatType) {
+        ChatType.Notion -> FakeAddNotionTask()
+        ChatType.TickTick -> FakeAddTickTickTask()
+    }
+}
+
+class FakeAddNotionTask : AddTask {
+
+    override suspend fun execute(task: String): ChatMessage {
+        return ChatMessage.Api.Success("Notion $task")
+    }
+}
+
+class FakeAddTickTickTask : AddTask {
+
+    override suspend fun execute(task: String): ChatMessage {
+        return ChatMessage.Api.Success("TickTick $task")
+    }
+}
+
+class AddNotionTask(
+    private val client: HttpClient = ktorClient,
+    private val json: Json = jsonSerialization,
+) : AddTask {
+
+    override suspend fun execute(task: String): ChatMessage {
         val response = client.post {
             contentType(ContentType.Application.Json)
-            setBody(json.encodeToString(Request(task)))
+            setBody(json.encodeToString(AddTask.Request(task)))
         }
 
         return if (response.status == HttpStatusCode.OK) {
