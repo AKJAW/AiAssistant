@@ -1,20 +1,19 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package com.akjaw.ai.assistant.shared
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
@@ -56,7 +55,6 @@ fun App() {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun TypeButton(resource: String, isSelected: Boolean) {
     val boredColor = remember(isSelected) { if (isSelected) Color.Black else Color.Gray }
@@ -89,9 +87,9 @@ val ktorClient = HttpClient {
         socketTimeoutMillis = 30_000
     }
     defaultRequest {
-        url(Endpoints.AddTask.URL)
+        url(Endpoints.AddTaskNotion.URL)
         headers {
-            set("authorization", Endpoints.AddTask.AUTH)
+            set("authorization", Endpoints.AddTaskNotion.AUTH)
         }
     }
 }
@@ -170,6 +168,20 @@ class ChatScreenStateHolder(
             isLoading = false
         }
     }
+
+    fun retryLastMessage() {
+        val secondToLastMessage =
+            mutableMessages.getOrNull(mutableMessages.lastIndex - 1)
+        if (secondToLastMessage is ChatMessage.User) {
+            mutableMessages.add(secondToLastMessage)
+            isLoading = true
+            coroutineScope.launch {
+                val response = addTask.execute(secondToLastMessage.message)
+                mutableMessages.add(response)
+                isLoading = false
+            }
+        }
+    }
 }
 
 @Composable
@@ -200,7 +212,25 @@ private fun ChatScreen(stateHolder: ChatScreenStateHolder) {
                     is ChatMessage.Api.Success -> Color(0xFFC9E6C4)
                 }
                 Card(modifier = Modifier.fillMaxWidth(), backgroundColor = background) {
-                    Text(message.message, modifier = Modifier.fillMaxWidth().padding(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            message.message,
+                            modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1f)
+                        )
+                        if (message is ChatMessage.Api.Error) {
+                            IconButton(
+                                onClick = stateHolder::retryLastMessage,
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource("refresh.xml"),
+                                    contentDescription = "refresh",
+                                    modifier = Modifier.size(48.dp)
+                                )
+                            }
+                            Spacer(Modifier.width(4.dp))
+                        }
+                    }
                 }
             }
         }
@@ -215,7 +245,6 @@ private fun ChatScreen(stateHolder: ChatScreenStateHolder) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ChatInput(
     userMessage: String,
