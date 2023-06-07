@@ -24,7 +24,7 @@ object TickTick {
 //    priority The priority of task, default is "0" Value : None:0, Low:1, Medium:3, High5
 //    projectId
 private val AddTask = """
-Based on {task} return single-line JSON and nothing more in the following format: {"date": "yyyy-MM-ddTHH:mm:ss", "priority": "high|normal|low", "category": "me", "name": "Concise yet descriptive task name"}. It's important for you to speak only in JSON, because your answer will be directly parsed by app. Note: if date is not provided, set it for current day 13:00.
+Based on {task} return single-line JSON and nothing more in the following format: {"date": "yyyy-MM-ddTHH:mm:ss", "priority": "high|normal|low", "category": "me", "name": "Concise yet descriptive task name"}. It's important for you to speak only in JSON, because your answer will be directly parsed by app. Note: pay special attention to the time which might be just a number, also if date is not provided, set it for current day 13:00.
 
 ### Today's date you have to use
 {{formatDate(now; "ddd")}} {{formatDate(now; "YYYY-MM-DD HH:mm")}}
@@ -49,6 +49,7 @@ Dentist visit 16.06 at 17:00
 low priority doctors appointment tommorow at 9:00
 Reconrd Android next level lesson
 Read android article
+14 czerwca 7:05 wycieczka Kartagina
 """.trimIndent()
 
 }
