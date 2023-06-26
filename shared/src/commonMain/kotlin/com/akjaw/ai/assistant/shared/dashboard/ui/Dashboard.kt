@@ -19,6 +19,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -88,10 +89,13 @@ class DashboardScreenStateHolder(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DashboardScreen() {
+fun DashboardScreen(initialType: ChatType?) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
     val dashboardScreenStateHolder = DashboardScreenStateHolder.remember(scope, pagerState)
+    LaunchedEffect(initialType) {
+        if (initialType != null) dashboardScreenStateHolder.setType(initialType)
+    }
     Column(modifier = Modifier.padding(horizontal = 8.dp)) {
         Spacer(modifier = Modifier.height(4.dp))
         Row(
