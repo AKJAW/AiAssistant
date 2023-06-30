@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
@@ -61,24 +62,26 @@ fun ChatScreen(stateHolder: ChatScreenStateHolder) {
                     is ChatMessage.Api.Error -> Color(0xFFFF7878)
                     is ChatMessage.Api.Success -> Color(0xFFC9E6C4)
                 }
-                Card(modifier = Modifier.fillMaxWidth(), backgroundColor = background) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            message.message,
-                            modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1f)
-                        )
-                        if (message is ChatMessage.Api.Error) {
-                            IconButton(
-                                onClick = stateHolder::retryLastMessage,
-                                modifier = Modifier.size(24.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource("refresh.xml"),
-                                    contentDescription = "refresh",
-                                    modifier = Modifier.size(48.dp)
-                                )
+                SelectionContainer {
+                    Card(modifier = Modifier.fillMaxWidth(), backgroundColor = background) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                message.message,
+                                modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1f)
+                            )
+                            if (message is ChatMessage.Api.Error) {
+                                IconButton(
+                                    onClick = stateHolder::retryLastMessage,
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Image(
+                                        painter = painterResource("refresh.xml"),
+                                        contentDescription = "refresh",
+                                        modifier = Modifier.size(48.dp)
+                                    )
+                                }
+                                Spacer(Modifier.width(4.dp))
                             }
-                            Spacer(Modifier.width(4.dp))
                         }
                     }
                 }
