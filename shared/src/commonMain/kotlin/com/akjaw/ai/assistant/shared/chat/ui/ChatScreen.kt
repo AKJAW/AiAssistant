@@ -2,7 +2,9 @@ package com.akjaw.ai.assistant.shared.chat.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,7 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
@@ -57,34 +62,10 @@ fun ChatScreen(stateHolder: ChatScreenStateHolder) {
                 items = stateHolder.messages,
                 key = { index, _ -> index }
             ) { _, message ->
-                val background = when (message) {
-                    is ChatMessage.User -> Color.White
-                    is ChatMessage.Api.Error -> Color(0xFFFF7878)
-                    is ChatMessage.Api.Success -> Color(0xFFC9E6C4)
-                }
-                SelectionContainer {
-                    Card(modifier = Modifier.fillMaxWidth(), backgroundColor = background) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                message.message,
-                                modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1f)
-                            )
-                            if (message is ChatMessage.Api.Error) {
-                                IconButton(
-                                    onClick = stateHolder::retryLastMessage,
-                                    modifier = Modifier.size(24.dp)
-                                ) {
-                                    Image(
-                                        painter = painterResource("refresh.xml"),
-                                        contentDescription = "refresh",
-                                        modifier = Modifier.size(48.dp)
-                                    )
-                                }
-                                Spacer(Modifier.width(4.dp))
-                            }
-                        }
-                    }
-                }
+                Message(
+                    message,
+                    stateHolder::retryLastMessage
+                )
             }
         }
         ChatInput(
@@ -95,6 +76,54 @@ fun ChatScreen(stateHolder: ChatScreenStateHolder) {
             isEnabled = stateHolder.isLoading.not(),
         )
         Spacer(modifier = Modifier.height(4.dp))
+    }
+}
+
+@Composable
+private fun Message(
+    message: ChatMessage,
+    onRetry: () -> Unit
+) {
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val background = when (message) {
+        is ChatMessage.User -> Color.White
+        is ChatMessage.Api.Error -> Color(0xFFFF7878)
+        is ChatMessage.Api.Success -> Color(0xFFC9E6C4)
+    }
+    SelectionContainer {
+        Box {
+            Card(modifier = Modifier.fillMaxWidth(), backgroundColor = background) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        message.message,
+                        modifier = Modifier.fillMaxWidth().padding(8.dp).weight(1f)
+                    )
+                    if (message is ChatMessage.Api.Error) {
+                        IconButton(
+                            onClick = onRetry,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Image(
+                                painter = painterResource("refresh.xml"),
+                                contentDescription = "refresh",
+                                modifier = Modifier.size(48.dp)
+                            )
+                        }
+                        Spacer(Modifier.width(4.dp))
+                    }
+                }
+            }
+            Image(
+                painter = painterResource("copy.xml"),
+                contentDescription = "copy",
+                modifier = Modifier.size(32.dp)
+                    .padding(top = 4.dp, end = 4.dp)
+                    .align(Alignment.TopEnd)
+                    .clickable {
+                        clipboardManager.setText(AnnotatedString(message.message))
+                    }
+            )
+        }
     }
 }
 
