@@ -4,6 +4,22 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.20"
+    id("app.cash.sqldelight")
+}
+
+sqldelight {
+    databases {
+        create("Database") {
+            packageName.set("com.akjaw.ai.assistant.database")
+            generateAsync.set(false)
+        }
+    }
+}
+
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "com.akjaw.ai.assistant.shared.MainView"
+    }
 }
 
 kotlin {
@@ -58,6 +74,7 @@ kotlin {
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.9.0")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+                implementation("app.cash.sqldelight:android-driver:2.0.0-alpha05")
             }
         }
         val iosX64Main by getting
@@ -70,12 +87,14 @@ kotlin {
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
                 implementation("io.ktor:ktor-client-darwin:$ktorVersion")
+                implementation("app.cash.sqldelight:native-driver:2.0.0-alpha05")
             }
         }
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+                implementation("app.cash.sqldelight:sqlite-driver:2.0.0-alpha05")
             }
         }
     }

@@ -1,0 +1,7 @@
+CREATE TABLE MessageEntity(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    text TEXT NOT NULL
+--     TODO chatType
+);
+
+SELECT * FROM MessageEntity;
