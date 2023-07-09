@@ -60,12 +60,31 @@ private val jsonSerialization = Json {
     isLenient = true
 }
 
-interface AddTask {
+abstract class AddTask(
+    private val client: HttpClient = createKtorClient(),
+    private val json: Json = jsonSerialization,
+) {
 
     @Serializable
     data class Request(val task: String)
 
-    suspend fun execute(task: String): ChatMessage
+    abstract val endpointUrl: String
+    abstract val auth: String
+
+    suspend fun execute(task: String): ChatMessage {
+        val response = client.post(endpointUrl) {
+            headers {
+                set("authorization", auth)
+            }
+            setBody(json.encodeToString(Request(task)))
+        }
+
+        return if (response.status == HttpStatusCode.OK) {
+            ChatMessage.Api.Success(response.bodyAsText())
+        } else {
+            ChatMessage.Api.Error(response.bodyAsText())
+        }
+    }
 }
 
 class AddTaskFactory {
@@ -77,43 +96,19 @@ class AddTaskFactory {
 }
 
 class AddNotionTask(
-    private val client: HttpClient = createKtorClient(),
-    private val json: Json = jsonSerialization,
-) : AddTask {
+    client: HttpClient = createKtorClient(),
+    json: Json = jsonSerialization,
+) : AddTask(client, json) {
 
-    override suspend fun execute(task: String): ChatMessage {
-        val response = client.post(Endpoints.AddTaskNotion.URL) {
-            headers {
-                set("authorization", Endpoints.AddTaskNotion.AUTH)
-            }
-            setBody(json.encodeToString(AddTask.Request(task)))
-        }
-
-        return if (response.status == HttpStatusCode.OK) {
-            ChatMessage.Api.Success(response.bodyAsText())
-        } else {
-            ChatMessage.Api.Error(response.bodyAsText())
-        }
-    }
+    override val endpointUrl: String = Endpoints.AddTaskNotion.URL
+    override val auth: String = Endpoints.AddTaskNotion.AUTH
 }
 
 class AddTickTickTask(
-    private val client: HttpClient = createKtorClient(),
-    private val json: Json = jsonSerialization,
-) : AddTask {
+    client: HttpClient = createKtorClient(),
+    json: Json = jsonSerialization,
+) : AddTask(client, json) {
 
-    override suspend fun execute(task: String): ChatMessage {
-        val response = client.post(Endpoints.AddTaskTickTick.URL) {
-            headers {
-                set("authorization", Endpoints.AddTaskTickTick.AUTH)
-            }
-            setBody(json.encodeToString(AddTask.Request(task)))
-        }
-
-        return if (response.status == HttpStatusCode.OK) {
-            ChatMessage.Api.Success(response.bodyAsText())
-        } else {
-            ChatMessage.Api.Error(response.bodyAsText())
-        }
-    }
+    override val endpointUrl: String = Endpoints.AddTaskTickTick.URL
+    override val auth: String = Endpoints.AddTaskTickTick.AUTH
 }
