@@ -20,7 +20,7 @@ internal fun createAddNotionTask(client: HttpClient) = AddTask(
     auth = Endpoints.AddTaskNotion.AUTH
 )
 
-internal class ChatMessageHandler(
+class ChatMessageHandler(
     client: HttpClient = createKtorClient(),
 ) {
     private val addNotionTask = createAddNotionTask(client)

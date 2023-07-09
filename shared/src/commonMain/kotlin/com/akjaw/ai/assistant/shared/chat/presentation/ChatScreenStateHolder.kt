@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.akjaw.ai.assistant.shared.chat.domain.AddTask
+import com.akjaw.ai.assistant.shared.chat.domain.ChatMessageHandler
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
 import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
 import kotlinx.coroutines.CoroutineScope
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 class ChatScreenStateHolder(
     val type: ChatType,
     private val coroutineScope: CoroutineScope,
-    private val addNotionTask: AddTask,
+    private val chatMessageHandler: ChatMessageHandler,
 ) {
 
     var userMessage: String by mutableStateOf("")
@@ -39,7 +40,7 @@ class ChatScreenStateHolder(
         userMessage = ""
         isLoading = true
         coroutineScope.launch {
-            val response = addNotionTask.execute(message)
+            val response = chatMessageHandler.sendMessage(message, type)
             mutableMessages.add(response)
             isLoading = false
         }
@@ -52,7 +53,7 @@ class ChatScreenStateHolder(
             mutableMessages.add(secondToLastMessage)
             isLoading = true
             coroutineScope.launch {
-                val response = addNotionTask.execute(secondToLastMessage.message)
+                val response = chatMessageHandler.sendMessage(secondToLastMessage.message, type)
                 mutableMessages.add(response)
                 isLoading = false
             }
