@@ -1,6 +1,5 @@
 package com.akjaw.ai.assistant.shared.chat.domain
 
-import com.akjaw.ai.assistant.shared.Endpoints
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
 import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
 import io.ktor.client.HttpClient
@@ -24,7 +23,10 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-// TODO add SendChatMessage UseCase which will take in the type, and manage w/e happens text.
+internal val jsonSerialization = Json {
+    prettyPrint = true
+    isLenient = true
+}
 
 internal fun createKtorClient(engine: HttpClientEngine? = null): HttpClient {
     val config: HttpClientConfig<*>.() -> Unit = {
@@ -55,21 +57,16 @@ internal fun createKtorClient(engine: HttpClientEngine? = null): HttpClient {
     }
 }
 
-private val jsonSerialization = Json {
-    prettyPrint = true
-    isLenient = true
-}
-
-abstract class AddTask(
-    private val client: HttpClient = createKtorClient(),
-    private val json: Json = jsonSerialization,
+class AddTask(
+    private val client: HttpClient,
+    private val endpointUrl: String,
+    private val auth: String,
 ) {
 
     @Serializable
     data class Request(val task: String)
 
-    abstract val endpointUrl: String
-    abstract val auth: String
+    private val json: Json = jsonSerialization
 
     suspend fun execute(task: String): ChatMessage {
         val response = client.post(endpointUrl) {
@@ -90,25 +87,7 @@ abstract class AddTask(
 class AddTaskFactory {
 
     fun create(chatType: ChatType) = when (chatType) {
-        ChatType.Notion -> AddNotionTask()
-        ChatType.TickTick -> AddTickTickTask()
+        ChatType.Notion -> createAddNotionTask(createKtorClient())
+        ChatType.TickTick -> createAddTickTickTask(createKtorClient())
     }
-}
-
-class AddNotionTask(
-    client: HttpClient = createKtorClient(),
-    json: Json = jsonSerialization,
-) : AddTask(client, json) {
-
-    override val endpointUrl: String = Endpoints.AddTaskNotion.URL
-    override val auth: String = Endpoints.AddTaskNotion.AUTH
-}
-
-class AddTickTickTask(
-    client: HttpClient = createKtorClient(),
-    json: Json = jsonSerialization,
-) : AddTask(client, json) {
-
-    override val endpointUrl: String = Endpoints.AddTaskTickTick.URL
-    override val auth: String = Endpoints.AddTaskTickTick.AUTH
 }
