@@ -4,6 +4,8 @@ import com.akjaw.ai.assistant.shared.Endpoints
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
 import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -22,26 +24,34 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+// TODO add SendChatMessage UseCase which will take in the type, and manage w/e happens text.
 
-private val ktorClient = HttpClient {
-    install(Logging) {
-        level = LogLevel.ALL
-        logger = object : Logger {
-            override fun log(message: String) {
-                co.touchlab.kermit.Logger.i(tag = "Ktor") { message }
+internal fun createKtorClient(engine: HttpClientEngine? = null): HttpClient {
+    val config: HttpClientConfig<*>.() -> Unit = {
+        install(Logging) {
+            level = LogLevel.ALL
+            logger = object : Logger {
+                override fun log(message: String) {
+                    co.touchlab.kermit.Logger.i(tag = "Ktor") { message }
+                }
             }
         }
+        install(ContentNegotiation) {
+            json()
+        }
+        install(HttpTimeout) {
+            requestTimeoutMillis = 30_000
+            connectTimeoutMillis = 30_000
+            socketTimeoutMillis = 30_000
+        }
+        defaultRequest {
+            contentType(ContentType.Application.Json)
+        }
     }
-    install(ContentNegotiation) {
-        json()
-    }
-    install(HttpTimeout) {
-        requestTimeoutMillis = 30_000
-        connectTimeoutMillis = 30_000
-        socketTimeoutMillis = 30_000
-    }
-    defaultRequest {
-        contentType(ContentType.Application.Json)
+    return if (engine == null) {
+        HttpClient(config)
+    } else {
+        HttpClient(engine, config)
     }
 }
 
@@ -67,7 +77,7 @@ class AddTaskFactory {
 }
 
 class AddNotionTask(
-    private val client: HttpClient = ktorClient,
+    private val client: HttpClient = createKtorClient(),
     private val json: Json = jsonSerialization,
 ) : AddTask {
 
@@ -88,7 +98,7 @@ class AddNotionTask(
 }
 
 class AddTickTickTask(
-    private val client: HttpClient = ktorClient,
+    private val client: HttpClient = createKtorClient(),
     private val json: Json = jsonSerialization,
 ) : AddTask {
 
