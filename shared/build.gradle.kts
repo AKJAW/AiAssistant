@@ -68,6 +68,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("co.touchlab:kermit:2.0.0-RC4")
+                implementation("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha05")
             }
         }
         val commonTest by getting {
@@ -77,6 +78,7 @@ kotlin {
                 implementation("io.kotest:kotest-assertions-core:5.6.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
                 implementation("io.ktor:ktor-client-mock:$ktorVersion")
+                implementation("app.cash.turbine:turbine:1.0.0")
             }
         }
         val androidMain by getting {
@@ -86,6 +88,7 @@ kotlin {
                 api("androidx.core:core-ktx:1.9.0")
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("app.cash.sqldelight:android-driver:2.0.0-alpha05")
+                implementation("app.cash.sqldelight:sqlite-driver:2.0.0-alpha05")
             }
         }
         val androidUnitTest by getting {

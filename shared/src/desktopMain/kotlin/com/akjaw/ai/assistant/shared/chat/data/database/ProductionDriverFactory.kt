@@ -5,9 +5,18 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.akjaw.ai.assistant.database.Database
 
 // TODO add a file database
-actual class DriverFactory {
+actual class ProductionDriverFactory : DriverFactory {
 
-    actual fun createDriver(): SqlDriver {
+    actual override fun createDriver(): SqlDriver {
+        val driver: SqlDriver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
+        Database.Schema.create(driver)
+        return driver
+    }
+}
+
+actual class InMemoryDriverFactory : DriverFactory {
+
+     actual override fun createDriver(): SqlDriver {
         val driver: SqlDriver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
         Database.Schema.create(driver)
         return driver
