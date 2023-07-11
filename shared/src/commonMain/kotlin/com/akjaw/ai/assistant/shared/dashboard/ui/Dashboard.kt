@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.akjaw.ai.assistant.shared.composition.Dependencies
 import com.akjaw.ai.assistant.shared.chat.domain.ChatMessageHandler
-import com.akjaw.ai.assistant.shared.chat.domain.createKtorClient
 import com.akjaw.ai.assistant.shared.chat.presentation.ChatScreenStateHolder
 import com.akjaw.ai.assistant.shared.chat.ui.ChatScreen
 import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType

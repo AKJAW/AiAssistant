@@ -1,6 +1,7 @@
 package com.akjaw.ai.assistant.shared.chat.domain
 
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
+import com.akjaw.ai.assistant.shared.composition.Dependencies
 import io.ktor.client.HttpClient
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
@@ -20,7 +21,7 @@ class AddTask(
     @Serializable
     data class Request(val task: String)
 
-    private val json: Json = jsonSerialization
+    private val json: Json = Dependencies.jsonSerialization
 
     suspend fun execute(task: String): ChatMessage {
         val response = client.post(endpointUrl) {

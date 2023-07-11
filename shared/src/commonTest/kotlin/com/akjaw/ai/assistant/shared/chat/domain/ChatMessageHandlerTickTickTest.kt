@@ -2,9 +2,11 @@ package com.akjaw.ai.assistant.shared.chat.domain
 
 import app.cash.turbine.test
 import com.akjaw.ai.assistant.database.Database
+import com.akjaw.ai.assistant.shared.chat.data.api.ProductionApiFactory
 import com.akjaw.ai.assistant.shared.chat.data.database.InMemoryDriverFactory
 import com.akjaw.ai.assistant.shared.chat.data.database.createDatabase
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
+import com.akjaw.ai.assistant.shared.composition.Dependencies
 import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
@@ -20,9 +22,9 @@ class ChatMessageHandlerTickTickTest {
     @BeforeTest
     fun setUp() {
         mockKtorEngine = MockKtorEngine()
-        val client = createKtorClient(mockKtorEngine.engine)
+        val client = Dependencies.createKtorClient(mockKtorEngine.engine)
         database = createDatabase(InMemoryDriverFactory())
-        systemUnderTest = ChatMessageHandler(client, database)
+        systemUnderTest = ChatMessageHandler(ProductionApiFactory(client), database)
     }
 
     @Test
