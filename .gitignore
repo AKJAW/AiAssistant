@@ -15,3 +15,4 @@ iosApp/iosApp.xcodeproj/*
 shared/shared.podspec
 **/OpenAiSecret.kt
 **/google-services.json
+/androidApp/KeyStore

@@ -23,6 +23,13 @@ kotlin {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            storeFile =
+                file("/Users/aleksanderjaworski/Projects/blog/ai-assistant/androidApp/KeyStore")
+            keyAlias = "key0"
+        }
+    }
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
     namespace = "com.akjaw.ai.assistant"
 
