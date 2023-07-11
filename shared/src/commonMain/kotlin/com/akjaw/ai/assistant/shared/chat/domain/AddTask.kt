@@ -12,18 +12,24 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class AddTask(
+// TODO make more generic, so it can be used for any type of message
+interface AddTask {
+
+    suspend fun execute(task: String): ChatMessage
+}
+
+class AddTaskInApi(
     private val client: HttpClient,
     private val endpointUrl: String,
     private val auth: String,
-) {
+) : AddTask {
 
     @Serializable
-    data class Request(val task: String)
+    private data class Request(val task: String)
 
     private val json: Json = Dependencies.jsonSerialization
 
-    suspend fun execute(task: String): ChatMessage {
+    override suspend fun execute(task: String): ChatMessage {
         val response = client.post(endpointUrl) {
             headers {
                 set("authorization", auth)
@@ -39,3 +45,9 @@ class AddTask(
     }
 }
 
+class FakeAddTask(private val name: String) : AddTask {
+
+    override suspend fun execute(task: String): ChatMessage {
+        return ChatMessage.Api.Success("$name added task: $task")
+    }
+}

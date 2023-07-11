@@ -2,8 +2,10 @@ package com.akjaw.ai.assistant.shared.composition
 
 import com.akjaw.ai.assistant.database.Database
 import com.akjaw.ai.assistant.shared.chat.data.api.ApiFactory
+import com.akjaw.ai.assistant.shared.chat.data.api.FakeApiFactory
 import com.akjaw.ai.assistant.shared.chat.data.api.ProductionApiFactory
 import com.akjaw.ai.assistant.shared.chat.domain.ChatMessageHandler
+import com.akjaw.ai.assistant.shared.utils.BuildInfo
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
@@ -28,7 +30,11 @@ object Dependencies {
     }
 
     private val apiFactory: ApiFactory by lazy {
-        ProductionApiFactory(createKtorClient())
+        if (BuildInfo.isDebug) {
+            FakeApiFactory()
+        } else {
+            ProductionApiFactory(createKtorClient())
+        }
     }
 
     internal val chatMessageHandler: ChatMessageHandler by lazy {
