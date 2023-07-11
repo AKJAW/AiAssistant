@@ -6,10 +6,10 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.akjaw.ai.assistant.database.Database
 
-actual class ProductionDriverFactory : DriverFactory {
+actual class ProductionDriverFactory(private val context: Context) : DriverFactory {
 
     actual override fun createDriver(): SqlDriver {
-        return TODO()
+        return AndroidSqliteDriver(Database.Schema, context, "database.db")
     }
 }
 

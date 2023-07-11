@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.akjaw.ai.assistant.shared.chat.composition.Dependencies
 import com.akjaw.ai.assistant.shared.chat.domain.ChatMessageHandler
 import com.akjaw.ai.assistant.shared.chat.domain.createKtorClient
 import com.akjaw.ai.assistant.shared.chat.presentation.ChatScreenStateHolder
@@ -44,7 +45,7 @@ class DashboardScreenStateHolder(
     private val scope: CoroutineScope,
     private val pagerState: PagerState,
     initialType: ChatType = ChatType.Notion,
-    private val chatScreenStateHolder: ChatMessageHandler = ChatMessageHandler(createKtorClient()),
+    private val chatScreenStateHolder: ChatMessageHandler = Dependencies.chatMessageHandler,
 ) {
 
     var stateHolders: List<ChatScreenStateHolder> by mutableStateOf(

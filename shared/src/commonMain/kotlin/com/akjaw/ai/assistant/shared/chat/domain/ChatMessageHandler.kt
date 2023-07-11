@@ -4,7 +4,6 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.akjaw.ai.assistant.database.Database
 import com.akjaw.ai.assistant.shared.Endpoints
-import com.akjaw.ai.assistant.shared.chat.data.database.createDatabase
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
 import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
 import io.ktor.client.HttpClient
@@ -28,7 +27,7 @@ private fun createAddNotionTask(client: HttpClient) = AddTask(
 
 class ChatMessageHandler(
     client: HttpClient = createKtorClient(),
-    private val database: Database = createDatabase()
+    private val database: Database
 ) {
     private val addNotionTask = createAddNotionTask(client)
     private val addTickTickTask = createAddTickTickTask(client)

@@ -20,7 +20,7 @@ sqldelight {
 
 tasks.withType<Jar> {
     manifest {
-        attributes["Main-Class"] = "com.akjaw.ai.assistant.shared.MainView"
+        attributes["Main-Class"] = "mainKt"
     }
 }
 
