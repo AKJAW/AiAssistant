@@ -4,7 +4,7 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import com.akjaw.ai.assistant.database.Database
 import com.akjaw.ai.assistant.database.MessageEntity
-import com.akjaw.ai.assistant.shared.chat.composition.Dependencies
+import com.akjaw.ai.assistant.shared.composition.Dependencies
 
 interface DriverFactory {
 

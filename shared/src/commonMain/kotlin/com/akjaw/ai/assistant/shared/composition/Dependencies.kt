@@ -1,4 +1,4 @@
-package com.akjaw.ai.assistant.shared.chat.composition
+package com.akjaw.ai.assistant.shared.composition
 
 import com.akjaw.ai.assistant.database.Database
 import com.akjaw.ai.assistant.shared.chat.domain.ChatMessageHandler
