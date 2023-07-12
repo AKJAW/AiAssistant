@@ -40,7 +40,7 @@ object Dependencies {
     }
 
     internal val chatMessageHandler: ChatMessageHandler by lazy {
-        ChatMessageHandler(apiFactory, database)
+        ChatMessageHandler(apiFactory, database, createTimestampProvider())
     }
 
     internal fun createTimestampProvider(): TimestampProvider = KotlinXTimestampProvider()

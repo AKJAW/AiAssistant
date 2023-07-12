@@ -52,6 +52,7 @@ kotlin {
             languageSettings.apply {
                 optIn("kotlin.RequiresOptIn")
                 optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
+                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
             }
         }
         val commonMain by getting {
