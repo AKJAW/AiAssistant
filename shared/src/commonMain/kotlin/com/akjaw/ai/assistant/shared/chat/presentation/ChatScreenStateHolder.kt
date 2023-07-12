@@ -10,6 +10,7 @@ import com.akjaw.ai.assistant.shared.chat.domain.ChatMessageHandler
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
 import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class ChatScreenStateHolder(
@@ -29,6 +30,13 @@ class ChatScreenStateHolder(
 
     private val mutableMessages = mutableStateListOf<ChatMessage>()
     val messages: List<ChatMessage> = mutableMessages
+
+    init {
+        coroutineScope.launch {
+            val savedMessages = chatMessageHandler.getMessagesForType(type).first()
+            mutableMessages.addAll(savedMessages)
+        }
+    }
 
     fun updateUserMessage(message: String) {
         userMessage = message
