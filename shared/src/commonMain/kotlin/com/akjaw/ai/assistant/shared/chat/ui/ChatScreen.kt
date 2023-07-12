@@ -106,7 +106,7 @@ private fun Message(
                             Image(
                                 painter = painterResource("refresh.xml"),
                                 contentDescription = "refresh",
-                                modifier = Modifier.size(48.dp)
+                                modifier = Modifier.size(48.dp),
                             )
                         }
                         Spacer(Modifier.width(4.dp))
@@ -121,7 +121,8 @@ private fun Message(
                     .align(Alignment.TopEnd)
                     .clickable {
                         clipboardManager.setText(AnnotatedString(message.message))
-                    }
+                    },
+                alpha = 0.3f,
             )
         }
     }
