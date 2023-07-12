@@ -4,6 +4,8 @@ import com.akjaw.ai.assistant.database.Database
 import com.akjaw.ai.assistant.shared.chat.data.api.ApiFactory
 import com.akjaw.ai.assistant.shared.chat.data.api.FakeApiFactory
 import com.akjaw.ai.assistant.shared.chat.data.api.ProductionApiFactory
+import com.akjaw.ai.assistant.shared.chat.data.time.KotlinXTimestampProvider
+import com.akjaw.ai.assistant.shared.chat.data.time.TimestampProvider
 import com.akjaw.ai.assistant.shared.chat.domain.ChatMessageHandler
 import com.akjaw.ai.assistant.shared.utils.BuildInfo
 import io.ktor.client.HttpClient
@@ -40,6 +42,8 @@ object Dependencies {
     internal val chatMessageHandler: ChatMessageHandler by lazy {
         ChatMessageHandler(apiFactory, database)
     }
+
+    internal fun createTimestampProvider(): TimestampProvider = KotlinXTimestampProvider()
 
     internal fun createKtorClient(engine: HttpClientEngine? = null): HttpClient {
         val config: HttpClientConfig<*>.() -> Unit = {

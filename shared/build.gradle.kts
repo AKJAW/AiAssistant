@@ -69,6 +69,7 @@ kotlin {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("co.touchlab:kermit:2.0.0-RC4")
                 implementation("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha05")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
             }
         }
         val commonTest by getting {
