@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="notion"
+        android:icon="@drawable/notion_logo"
+        android:shortcutShortLabel="@string/notion">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.akjaw.ai.assistant.Android"
+            android:targetClass="com.akjaw.ai.assistant.android.MainActivity" >
+            <extra android:name="chatType" android:value="notion"/>
+        </intent>
+    </shortcut>
+    <shortcut
+        android:shortcutId="ticktick"
+        android:icon="@drawable/ticktick"
+        android:shortcutShortLabel="@string/ticktick">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.akjaw.ai.assistant.Android"
+            android:targetClass="com.akjaw.ai.assistant.android.MainActivity" >
+            <extra android:name="chatType" android:value="ticktick"/>
+        </intent>
+    </shortcut>
+</shortcuts>

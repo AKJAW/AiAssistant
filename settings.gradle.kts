@@ -1,4 +1,4 @@
-rootProject.name = "MyApplication"
+rootProject.name = "AiAssistantKMP"
 
 include(":androidApp")
 include(":shared")
@@ -7,6 +7,7 @@ include(":desktopApp")
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         google()
     }
@@ -24,6 +25,9 @@ pluginManagement {
         id("com.android.library").version(agpVersion)
 
         id("org.jetbrains.compose").version(composeVersion)
+        id("com.google.gms.google-services").version("4.3.15")
+        id("com.google.firebase.crashlytics").version("2.9.5")
+        id("app.cash.sqldelight").version("2.0.0-alpha05")
     }
 }
 

@@ -1,0 +1,16 @@
+import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType;
+
+CREATE TABLE MessageEntity(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    text TEXT NOT NULL,
+    timestampMilliseconds INTEGER NOT NULL,
+    chatType TEXT AS ChatType NOT NULL,
+    isUser INTEGER AS kotlin.Boolean NOT NULL
+);
+
+selectByType:
+SELECT * FROM MessageEntity WHERE chatType = ?;
+
+insert:
+INSERT INTO MessageEntity(id, text, timestampMilliseconds, chatType, isUser)
+VALUES (?, ?, ?, ?, ?);
