@@ -9,7 +9,7 @@ import com.akjaw.ai.assistant.shared.chat.data.database.InMemoryDriverFactory
 import com.akjaw.ai.assistant.shared.chat.data.database.createDatabase
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
 import com.akjaw.ai.assistant.shared.chat.helpers.StubTimestampProvider
-import com.akjaw.ai.assistant.shared.chat.helpers.createChatMessageHandler
+import com.akjaw.ai.assistant.shared.chat.helpers.createPersistedApiChatMessageHandler
 import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldHaveSize
@@ -31,7 +31,7 @@ class ChatMessageHandlerCommonTest {
         database = createDatabase(InMemoryDriverFactory())
         stubTimestampProvider = StubTimestampProvider()
         mockKtorEngine = MockKtorEngine()
-        systemUnderTest = createChatMessageHandler(
+        systemUnderTest = createPersistedApiChatMessageHandler(
             database = database,
             timestampProvider = stubTimestampProvider,
             engine = mockKtorEngine.engine,

@@ -7,6 +7,7 @@ import com.akjaw.ai.assistant.shared.chat.data.api.ProductionApiFactory
 import com.akjaw.ai.assistant.shared.chat.data.time.KotlinXTimestampProvider
 import com.akjaw.ai.assistant.shared.chat.data.time.TimestampProvider
 import com.akjaw.ai.assistant.shared.chat.domain.ChatMessageHandler
+import com.akjaw.ai.assistant.shared.chat.domain.PersistedApiChatMessageHandler
 import com.akjaw.ai.assistant.shared.utils.BuildInfo
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -40,7 +41,7 @@ object Dependencies {
     }
 
     internal val chatMessageHandler: ChatMessageHandler by lazy {
-        ChatMessageHandler(apiFactory, database, createTimestampProvider())
+        PersistedApiChatMessageHandler(apiFactory, database, createTimestampProvider())
     }
 
     internal fun createTimestampProvider(): TimestampProvider = KotlinXTimestampProvider()

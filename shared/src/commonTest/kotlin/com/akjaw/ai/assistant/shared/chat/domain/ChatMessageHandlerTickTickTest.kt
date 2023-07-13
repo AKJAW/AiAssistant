@@ -1,8 +1,7 @@
 package com.akjaw.ai.assistant.shared.chat.domain
 
 import com.akjaw.ai.assistant.shared.chat.domain.model.ChatMessage
-import com.akjaw.ai.assistant.shared.chat.helpers.createChatMessageHandler
-import com.akjaw.ai.assistant.shared.composition.Dependencies
+import com.akjaw.ai.assistant.shared.chat.helpers.createPersistedApiChatMessageHandler
 import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
@@ -17,7 +16,7 @@ class ChatMessageHandlerTickTickTest {
     @BeforeTest
     fun setUp() {
         mockKtorEngine = MockKtorEngine()
-        systemUnderTest = createChatMessageHandler(engine = mockKtorEngine.engine)
+        systemUnderTest = createPersistedApiChatMessageHandler(engine = mockKtorEngine.engine)
     }
 
     @Test

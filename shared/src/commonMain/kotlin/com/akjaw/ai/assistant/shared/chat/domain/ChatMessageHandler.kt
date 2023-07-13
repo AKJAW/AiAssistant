@@ -13,15 +13,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class ChatMessageHandler(
+interface ChatMessageHandler {
+
+    fun getMessagesForType(chatType: ChatType): Flow<List<ChatMessage>>
+
+    suspend fun sendMessage(text: String, type: ChatType): ChatMessage
+}
+
+class PersistedApiChatMessageHandler(
     apiFactory: ApiFactory,
     private val database: Database,
     private val timestampProvider: TimestampProvider,
-) {
+) : ChatMessageHandler {
     private val addNotionTask = apiFactory.createAddNotionTask()
     private val addTickTickTask = apiFactory.createAddTickTickTask()
 
-    fun getMessagesForType(chatType: ChatType): Flow<List<ChatMessage>> =
+    override fun getMessagesForType(chatType: ChatType): Flow<List<ChatMessage>> =
         database.messageEntityQueries.selectByType(chatType)
             .asFlow()
             .mapToList(Dispatchers.Default)
@@ -35,7 +42,7 @@ class ChatMessageHandler(
                 }
             }
 
-    suspend fun sendMessage(text: String, type: ChatType): ChatMessage {
+    override suspend fun sendMessage(text: String, type: ChatType): ChatMessage {
         val userMessageTimestamp = timestampProvider.getMilliseconds()
         val response: ChatMessage = when (type) {
             ChatType.Notion -> addNotionTask.execute(text)

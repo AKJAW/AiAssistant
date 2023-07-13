@@ -5,19 +5,16 @@ import com.akjaw.ai.assistant.shared.chat.data.api.ProductionApiFactory
 import com.akjaw.ai.assistant.shared.chat.data.database.InMemoryDriverFactory
 import com.akjaw.ai.assistant.shared.chat.data.database.createDatabase
 import com.akjaw.ai.assistant.shared.chat.data.time.TimestampProvider
-import com.akjaw.ai.assistant.shared.chat.domain.ChatMessageHandler
 import com.akjaw.ai.assistant.shared.chat.domain.MockKtorEngine
+import com.akjaw.ai.assistant.shared.chat.domain.PersistedApiChatMessageHandler
 import com.akjaw.ai.assistant.shared.composition.Dependencies
-import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.engine.mock.MockEngine
 
-fun createChatMessageHandler(
+fun createPersistedApiChatMessageHandler(
     database: Database = createDatabase(InMemoryDriverFactory()),
     engine: HttpClientEngine = MockKtorEngine().engine,
     timestampProvider: TimestampProvider = StubTimestampProvider()
-) =
-    ChatMessageHandler(
+) = PersistedApiChatMessageHandler(
         ProductionApiFactory(Dependencies.createKtorClient(engine)),
         database,
         timestampProvider
