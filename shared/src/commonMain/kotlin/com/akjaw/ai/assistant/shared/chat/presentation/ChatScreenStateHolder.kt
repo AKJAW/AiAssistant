@@ -46,12 +46,7 @@ class ChatScreenStateHolder(
         val message = userMessage
         mutableMessages.add(ChatMessage.User(message))
         userMessage = ""
-        isLoading = true
-        coroutineScope.launch {
-            val response = chatMessageHandler.sendMessage(message, type)
-            mutableMessages.add(response)
-            isLoading = false
-        }
+        sendMessageToHandler(message)
     }
 
     fun retryLastMessage() {
@@ -60,12 +55,16 @@ class ChatScreenStateHolder(
         val isLastMessageAnError = mutableMessages.lastOrNull() is ChatMessage.Api.Error
         if (secondToLastMessage is ChatMessage.User && isLastMessageAnError) {
             mutableMessages.add(secondToLastMessage)
-            isLoading = true
-            coroutineScope.launch {
-                val response = chatMessageHandler.sendMessage(secondToLastMessage.message, type)
-                mutableMessages.add(response)
-                isLoading = false
-            }
+            sendMessageToHandler(secondToLastMessage.message)
+        }
+    }
+
+    private fun sendMessageToHandler(message: String) {
+        isLoading = true
+        coroutineScope.launch {
+            val response = chatMessageHandler.sendMessage(message, type)
+            mutableMessages.add(response)
+            isLoading = false
         }
     }
 }
