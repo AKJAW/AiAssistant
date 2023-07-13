@@ -57,7 +57,8 @@ class ChatScreenStateHolder(
     fun retryLastMessage() {
         val secondToLastMessage =
             mutableMessages.getOrNull(mutableMessages.lastIndex - 1)
-        if (secondToLastMessage is ChatMessage.User) {
+        val isLastMessageAnError = mutableMessages.lastOrNull() is ChatMessage.Api.Error
+        if (secondToLastMessage is ChatMessage.User && isLastMessageAnError) {
             mutableMessages.add(secondToLastMessage)
             isLoading = true
             coroutineScope.launch {
