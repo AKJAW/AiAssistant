@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.akjaw.ai.assistant.BuildConfig
 import com.akjaw.ai.assistant.shared.chat.data.database.ProductionDriverFactory
 import com.akjaw.ai.assistant.shared.chat.data.database.createDatabase
+import com.akjaw.ai.assistant.shared.composition.initializeDependencies
 import com.akjaw.ai.assistant.shared.dashboard.domain.ChatType
 import com.akjaw.ai.assistant.shared.utils.BuildInfo
 
@@ -15,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         BuildInfo.isDebug = BuildConfig.DEBUG
-        createDatabase(ProductionDriverFactory(context = applicationContext))
+        initializeDependencies(ProductionDriverFactory(applicationContext))
         val type = intent.getStringExtra("chatType")?.toType()
         setContent {
             MainView(type)
