@@ -27,6 +27,7 @@ class ChatScreenStateHolderTest {
             coroutineContext = unconfinedTestDispatcher,
             chatMessageHandler = fakeChatMessageHandler
         )
+        systemUnderTest.updateUserMessage("irrelevant")
     }
 
     @Test
@@ -69,6 +70,15 @@ class ChatScreenStateHolderTest {
     @Test
     fun `Initially loading is false`() {
         systemUnderTest.isLoading shouldBe false
+    }
+
+    @Test
+    fun `When sending a blank message then messages are not updated`() {
+        systemUnderTest.updateUserMessage(" ")
+
+        systemUnderTest.sendMessage()
+
+        systemUnderTest.messages shouldBe emptyList()
     }
 
     @Test
