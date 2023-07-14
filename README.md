@@ -11,4 +11,3 @@
 
 ## Desktop
 - A Persistent database
-- Fix Release version and add a Debug one
