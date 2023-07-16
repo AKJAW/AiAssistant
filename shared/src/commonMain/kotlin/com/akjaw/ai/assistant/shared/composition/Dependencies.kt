@@ -6,6 +6,7 @@ import com.akjaw.ai.assistant.shared.chat.data.api.FakeApiFactory
 import com.akjaw.ai.assistant.shared.chat.data.api.ProductionApiFactory
 import com.akjaw.ai.assistant.shared.chat.data.database.DriverFactory
 import com.akjaw.ai.assistant.shared.chat.data.database.ProductionDriverFactory
+import com.akjaw.ai.assistant.shared.chat.data.database.createDatabase
 import com.akjaw.ai.assistant.shared.chat.data.time.KotlinXTimestampProvider
 import com.akjaw.ai.assistant.shared.chat.data.time.TimestampProvider
 import com.akjaw.ai.assistant.shared.chat.domain.ChatMessageHandler
@@ -25,7 +26,13 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-expect fun initializeDependencies(driverFactory: DriverFactory)
+fun initializeDependencies(
+    isDebug: Boolean,
+    driverFactory: DriverFactory = ProductionDriverFactory()
+) {
+    BuildInfo.isDebug = isDebug
+    createDatabase(driverFactory)
+}
 
 object Dependencies {
 

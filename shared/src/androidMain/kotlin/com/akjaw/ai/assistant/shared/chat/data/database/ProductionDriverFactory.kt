@@ -8,6 +8,9 @@ import com.akjaw.ai.assistant.database.Database
 
 actual class ProductionDriverFactory(private val context: Context) : DriverFactory {
 
+    // Required to make default DriverFactor parameter working
+    actual constructor() : this(throw IllegalStateException("Android Factory constructor cannot be called without parameter"))
+
     actual override fun createDriver(): SqlDriver {
         return AndroidSqliteDriver(Database.Schema, context, "database.db")
     }

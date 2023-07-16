@@ -11,3 +11,7 @@
 
 ## Desktop
 - A Persistent database
+
+## iOS
+- Fix Soft Keyboard moving the top off-screen
+- Fix race condition between Dependencies initialization and showing the UI
