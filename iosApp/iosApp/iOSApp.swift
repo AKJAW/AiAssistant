@@ -5,7 +5,7 @@ import shared
 struct iOSApp: App {
 
     init() {
-        InitializeDependenciesKt.execute()
+        DependenciesKt.initialize()
     }
 
 	var body: some Scene {
