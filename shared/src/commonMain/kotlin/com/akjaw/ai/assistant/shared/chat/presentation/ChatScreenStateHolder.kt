@@ -44,6 +44,8 @@ class ChatScreenStateHolder(
 
     fun sendMessage() {
         val message = userMessage
+        if (message.isBlank()) return
+
         mutableMessages.add(ChatMessage.User(message))
         userMessage = ""
         sendMessageToHandler(message)

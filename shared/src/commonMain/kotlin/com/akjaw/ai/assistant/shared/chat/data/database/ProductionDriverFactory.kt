@@ -11,7 +11,7 @@ interface DriverFactory {
     fun createDriver(): SqlDriver
 }
 
-expect class ProductionDriverFactory : DriverFactory {
+expect class ProductionDriverFactory() : DriverFactory {
 
     override fun createDriver(): SqlDriver
 }
