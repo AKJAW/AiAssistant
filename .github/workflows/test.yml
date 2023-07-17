@@ -1,14 +1,7 @@
 name: Tests
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, ready_for_review]
-    branches:
-      - main
+  workflow_call:
 
 jobs:
   Android:
@@ -36,9 +29,9 @@ jobs:
       - uses: burrunan/gradle-cache-action@v1
         name: Test
         with:
-          arguments: clean testDebug -p android/
+          arguments: clean testDebug -p androidApp/
 
-  KMP-Android:
+  KMP-JVM:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
     runs-on: macos-12
 
@@ -58,7 +51,7 @@ jobs:
       - uses: burrunan/gradle-cache-action@v1
         name: Test
         with:
-          arguments: clean testDebug -p kmp/
+          arguments: clean testDebug -p shared/
 
   KMP-iOS:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
@@ -80,4 +73,4 @@ jobs:
       - uses: burrunan/gradle-cache-action@v1
         name: Test
         with:
-          arguments: clean allTests -p kmp/
+          arguments: clean allTests -p shared/
