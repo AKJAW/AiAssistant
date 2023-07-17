@@ -1,0 +1,100 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, ready_for_review]
+    branches:
+      - main
+
+jobs:
+  Android:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v2
+
+      - name: Git-crypt
+        uses: ./.github/actions/git-crypt-unlock
+        with:
+          GIT_CRYPT_KEY: "${{ secrets.GIT_CRYPT_KEY }}"
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Test
+        with:
+          arguments: :android:app:assemble
+
+  KMP:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Git-crypt
+        uses: ./.github/actions/git-crypt-unlock
+        with:
+          GIT_CRYPT_KEY: "${{ secrets.GIT_CRYPT_KEY }}"
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Test
+        with:
+          arguments: :kmp:shared:assemble
+
+  iOS:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Git-crypt
+        uses: ./.github/actions/git-crypt-unlock
+        with:
+          GIT_CRYPT_KEY: "${{ secrets.GIT_CRYPT_KEY }}"
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Compile ios
+        with:
+          arguments: :kmp:shared:compileKotlinIosX64
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Compile ios
+        with:
+          arguments: :kmp:shared:generateDummyFramework
+
+      - name: Set up cocoapods
+        uses: maxim-lobanov/setup-cocoapods@v1
+        with:
+          podfile-path: ios/Podfile.lock
+
+      - name: Install Dependencies
+        run: |
+          cd ios
+          pod install --verbose
+
+      - run: xcodebuild -workspace ios/TimiIOS.xcworkspace -configuration Debug -scheme TimiIOS -sdk iphoneos -destination name='iPhone 14' build -verbose

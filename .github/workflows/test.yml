@@ -1,0 +1,83 @@
+name: Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, ready_for_review]
+    branches:
+      - main
+
+jobs:
+  Android:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v2
+
+      - name: Git-crypt
+        uses: ./.github/actions/git-crypt-unlock
+        with:
+          GIT_CRYPT_KEY: "${{ secrets.GIT_CRYPT_KEY }}"
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Test
+        with:
+          arguments: clean testDebug -p android/
+
+  KMP-Android:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Git-crypt
+        uses: ./.github/actions/git-crypt-unlock
+        with:
+          GIT_CRYPT_KEY: "${{ secrets.GIT_CRYPT_KEY }}"
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Test
+        with:
+          arguments: clean testDebug -p kmp/
+
+  KMP-iOS:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Git-crypt
+        uses: ./.github/actions/git-crypt-unlock
+        with:
+          GIT_CRYPT_KEY: "${{ secrets.GIT_CRYPT_KEY }}"
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Test
+        with:
+          arguments: clean allTests -p kmp/
