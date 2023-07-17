@@ -1,4 +1,4 @@
-name: Code review with reusable
+name: Code review
 
 on:
   workflow_dispatch:
