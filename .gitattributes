@@ -1,0 +1,4 @@
+*Secret.* filter=git-crypt diff=git-crypt
+*Secrets.* filter=git-crypt diff=git-crypt
+google-services.json filter=git-crypt diff=git-crypt
+KeyStore filter=git-crypt diff=git-crypt
