@@ -88,12 +88,11 @@ jobs:
       - name: Set up cocoapods
         uses: maxim-lobanov/setup-cocoapods@v1
         with:
-          version: 1.12.1d
-          podfile-path: iosApp/Podfile
+          version: latest
 
       - name: Install Dependencies
         run: |
-          cd ios
+          cd iosApp
           pod install --verbose
 
-      - run: xcodebuild -workspace iosApp/TimiIOS.xcworkspace -configuration Debug -scheme TimiIOS -sdk iphoneos -destination name='iPhone 14' build -verbose
+      - run: xcodebuild -workspace iosApp/iosApp.xcworkspace -configuration Debug -scheme iosApp -sdk iphoneos -destination name='iPhone 14' build -verbose
