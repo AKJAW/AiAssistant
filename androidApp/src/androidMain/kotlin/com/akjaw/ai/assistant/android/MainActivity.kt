@@ -4,6 +4,7 @@ import com.akjaw.ai.assistant.shared.MainView
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import com.akjaw.ai.assistant.BuildConfig
 import com.akjaw.ai.assistant.shared.chat.data.database.ProductionDriverFactory
 import com.akjaw.ai.assistant.shared.composition.initializeDependencies
@@ -13,6 +14,7 @@ import com.akjaw.ai.assistant.shared.utils.BuildInfo
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         initializeDependencies(
             isDebug = BuildConfig.DEBUG,
