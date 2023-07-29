@@ -18,14 +18,14 @@ interface AddTask {
     suspend fun execute(task: String): ChatMessage
 }
 
+@Serializable
+ data class Request(val task: String)
+
 class AddTaskInApi(
     private val client: HttpClient,
     private val endpointUrl: String,
     private val auth: String,
 ) : AddTask {
-
-    @Serializable
-    private data class Request(val task: String)
 
     private val json: Json = Dependencies.jsonSerialization
 

@@ -96,7 +96,7 @@ class DashboardScreenStateHolder(
 @Composable
 fun DashboardScreen(initialType: ChatType?) {
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState { ChatType.values().size }
     val dashboardScreenStateHolder = DashboardScreenStateHolder.remember(scope, pagerState)
     LaunchedEffect(initialType) {
         if (initialType != null) dashboardScreenStateHolder.setType(initialType)
@@ -120,7 +120,6 @@ fun DashboardScreen(initialType: ChatType?) {
         }
         Spacer(modifier = Modifier.height(4.dp))
         HorizontalPager(
-            pageCount = dashboardScreenStateHolder.stateHolders.count(),
             state = pagerState,
             userScrollEnabled = false,
         ) { pageNumber ->
