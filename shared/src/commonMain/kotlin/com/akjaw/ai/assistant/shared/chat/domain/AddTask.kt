@@ -25,7 +25,7 @@ class AddTaskInApi(
 ) : AddTask {
 
     @Serializable
-    private data class Request(val task: String)
+    data class Request(val task: String)
 
     private val json: Json = Dependencies.jsonSerialization
 

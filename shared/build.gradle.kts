@@ -5,7 +5,7 @@ plugins {
     kotlin("native.cocoapods")
     id("com.android.library")
     id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.20"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
     id("app.cash.sqldelight")
 }
 
@@ -62,6 +62,7 @@ kotlin {
                 implementation(compose.material)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 implementation("com.aallam.openai:openai-client:3.2.0")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-client-logging:$ktorVersion")
@@ -75,8 +76,8 @@ kotlin {
         }
         val commonTest by getting {
             dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-test-common:1.8.20")
-                implementation("org.jetbrains.kotlin:kotlin-test-annotations-common:1.8.20")
+                implementation("org.jetbrains.kotlin:kotlin-test-common:1.9.0")
+                implementation("org.jetbrains.kotlin:kotlin-test-annotations-common:1.9.0")
                 implementation("io.kotest:kotest-assertions-core:5.6.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
                 implementation("io.ktor:ktor-client-mock:$ktorVersion")

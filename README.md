@@ -6,8 +6,7 @@
 - Explain the prompts
 
 ## Infrastructure
-- Add CI/CD
-- Add linting
+- Add linting - And make it a required step before Code builds
 
 ## Desktop
 - A Persistent database
