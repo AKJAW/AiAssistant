@@ -2,4 +2,5 @@
     <string name="app_name">Ai Assistant</string>
     <string name="notion">Notion</string>
     <string name="ticktick">TickTick</string>
+    <string name="story">Story</string>
 </resources>

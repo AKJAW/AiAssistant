@@ -22,4 +22,15 @@
             <extra android:name="chatType" android:value="ticktick"/>
         </intent>
     </shortcut>
+    <shortcut
+            android:shortcutId="story"
+            android:icon="@drawable/speech_bubble"
+            android:shortcutShortLabel="@string/story">
+        <intent
+                android:action="android.intent.action.VIEW"
+                android:targetPackage="com.akjaw.ai.assistant.Android"
+                android:targetClass="com.akjaw.ai.assistant.android.MainActivity" >
+            <extra android:name="chatType" android:value="story"/>
+        </intent>
+    </shortcut>
 </shortcuts>

@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     fun String.toType(): ChatType? = when (this) {
         "notion" -> ChatType.Notion
         "ticktick" -> ChatType.TickTick
+        "story" -> ChatType.Story
         else -> null
     }
 }
