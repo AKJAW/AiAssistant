@@ -25,6 +25,7 @@ class PersistedApiChatMessageHandler(
 ) : ChatMessageHandler {
     private val addNotionTask = apiFactory.createAddNotionTask()
     private val addTickTickTask = apiFactory.createAddTickTickTask()
+    private val addNotionStory = apiFactory.createAddNotionStory()
 
     override fun getMessagesForType(chatType: ChatType): Flow<List<ChatMessage>> =
         database.messageEntityQueries.selectByType(chatType)
@@ -45,6 +46,7 @@ class PersistedApiChatMessageHandler(
         val response: ChatMessage = when (type) {
             ChatType.Notion -> addNotionTask.execute(AddTaskRequest(text))
             ChatType.TickTick -> addTickTickTask.execute(AddTaskRequest(text))
+            ChatType.Story -> addNotionStory.execute(AddStoryRequest(text))
         }
         if (response is ChatMessage.Api.Success) {
             database.transaction {

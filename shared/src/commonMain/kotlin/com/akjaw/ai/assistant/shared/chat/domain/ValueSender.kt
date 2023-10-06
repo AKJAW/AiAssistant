@@ -21,6 +21,9 @@ interface ValueSender<Request> {
 @Serializable
 data class AddTaskRequest(val task: String)
 
+@Serializable
+data class AddStoryRequest(val story: String)
+
 class ApiValueSender<Request>(
     private val client: HttpClient,
     private val endpointUrl: String,
@@ -44,9 +47,9 @@ class ApiValueSender<Request>(
     }
 }
 
-class FakeValueSender(private val name: String) : ValueSender<AddTaskRequest> {
+class FakeValueSender<Request>(private val name: String) : ValueSender<Request> {
 
-    override suspend fun execute(request: AddTaskRequest): ChatMessage {
+    override suspend fun execute(request: Request): ChatMessage {
         return ChatMessage.Api.Success("$name added task: $request")
     }
 }
