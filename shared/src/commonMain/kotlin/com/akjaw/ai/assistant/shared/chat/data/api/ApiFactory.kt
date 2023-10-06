@@ -1,29 +1,29 @@
 package com.akjaw.ai.assistant.shared.chat.data.api
 
 import com.akjaw.ai.assistant.shared.Endpoints
-import com.akjaw.ai.assistant.shared.chat.domain.AddTask
-import com.akjaw.ai.assistant.shared.chat.domain.AddTaskInApi
-import com.akjaw.ai.assistant.shared.chat.domain.FakeAddTask
+import com.akjaw.ai.assistant.shared.chat.domain.ValueSender
+import com.akjaw.ai.assistant.shared.chat.domain.ApiValueSender
+import com.akjaw.ai.assistant.shared.chat.domain.FakeValueSender
 import io.ktor.client.HttpClient
 
 interface ApiFactory {
 
-    fun createAddTickTickTask(): AddTask
+    fun createAddTickTickTask(): ValueSender
 
-    fun createAddNotionTask(): AddTask
+    fun createAddNotionTask(): ValueSender
 }
 
 class ProductionApiFactory(
     private val client: HttpClient,
 ) : ApiFactory {
 
-    override fun createAddTickTickTask(): AddTask = AddTaskInApi(
+    override fun createAddTickTickTask(): ValueSender = ApiValueSender(
         client = client,
         endpointUrl = Endpoints.AddTaskTickTick.URL,
         auth = Endpoints.AddTaskTickTick.AUTH
     )
 
-    override fun createAddNotionTask(): AddTask = AddTaskInApi(
+    override fun createAddNotionTask(): ValueSender = ApiValueSender(
         client = client,
         endpointUrl = Endpoints.AddTaskNotion.URL,
         auth = Endpoints.AddTaskNotion.AUTH
@@ -32,7 +32,7 @@ class ProductionApiFactory(
 
 class FakeApiFactory : ApiFactory {
 
-    override fun createAddTickTickTask(): AddTask = FakeAddTask("TickTick")
+    override fun createAddTickTickTask(): ValueSender = FakeValueSender("TickTick")
 
-    override fun createAddNotionTask(): AddTask = FakeAddTask("Notion")
+    override fun createAddNotionTask(): ValueSender = FakeValueSender("Notion")
 }
