@@ -44,9 +44,9 @@ class PersistedApiChatMessageHandler(
     override suspend fun sendMessage(text: String, type: ChatType): ChatMessage {
         val userMessageTimestamp = timestampProvider.getMilliseconds()
         val response: ChatMessage = when (type) {
-            ChatType.Notion -> addNotionTask.execute(AddTaskRequest(text))
+            ChatType.Notion -> addNotionTask.execute(text)
             ChatType.TickTick -> addTickTickTask.execute(AddTaskRequest(text))
-            ChatType.Story -> addNotionStory.execute(AddStoryRequest(text))
+            ChatType.Story -> addNotionStory.execute(text)
         }
         if (response is ChatMessage.Api.Success) {
             database.transaction {

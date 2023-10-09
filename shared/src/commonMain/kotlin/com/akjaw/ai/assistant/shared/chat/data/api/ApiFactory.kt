@@ -6,6 +6,7 @@ import com.akjaw.ai.assistant.shared.chat.domain.AddTaskRequest
 import com.akjaw.ai.assistant.shared.chat.domain.ValueSender
 import com.akjaw.ai.assistant.shared.chat.domain.ApiValueSender
 import com.akjaw.ai.assistant.shared.chat.domain.FakeValueSender
+import com.akjaw.ai.assistant.shared.chat.domain.NewApiValueSender
 import com.akjaw.ai.assistant.shared.composition.Dependencies
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
@@ -15,9 +16,9 @@ interface ApiFactory {
 
     fun createAddTickTickTask(): ValueSender<AddTaskRequest>
 
-    fun createAddNotionTask(): ValueSender<AddTaskRequest>
+    fun createAddNotionTask(): ValueSender<String>
 
-    fun createAddNotionStory(): ValueSender<AddStoryRequest>
+    fun createAddNotionStory(): ValueSender<String>
 }
 
 
@@ -34,18 +35,18 @@ class ProductionApiFactory(
         parseToJson = { json.encodeToString(it) },
     )
 
-    override fun createAddNotionTask(): ValueSender<AddTaskRequest> = ApiValueSender(
+    override fun createAddNotionTask(): ValueSender<String> = NewApiValueSender(
         client = client,
-        endpointUrl = Endpoints.AddTaskNotion.URL,
-        auth = Endpoints.AddTaskNotion.AUTH,
-        parseToJson = { json.encodeToString(it) },
+        endpointUrl = Endpoints.GenericNotion.URL,
+        auth = Endpoints.GenericNotion.AUTH,
+        type = Endpoints.GenericNotion.Type.Task.name,
     )
 
-    override fun createAddNotionStory(): ValueSender<AddStoryRequest> = ApiValueSender(
+    override fun createAddNotionStory(): ValueSender<String> = NewApiValueSender(
         client = client,
-        endpointUrl = Endpoints.AddStoryNotion.URL,
-        auth = Endpoints.AddStoryNotion.AUTH,
-        parseToJson = { json.encodeToString(it) },
+        endpointUrl = Endpoints.GenericNotion.URL,
+        auth = Endpoints.GenericNotion.AUTH,
+        type = Endpoints.GenericNotion.Type.Story.name,
     )
 }
 
@@ -53,7 +54,7 @@ class FakeApiFactory : ApiFactory {
 
     override fun createAddTickTickTask(): ValueSender<AddTaskRequest> = FakeValueSender("TickTickTask")
 
-    override fun createAddNotionTask(): ValueSender<AddTaskRequest> = FakeValueSender("NotionTask")
+    override fun createAddNotionTask(): ValueSender<String> = FakeValueSender("NotionTask")
 
-    override fun createAddNotionStory(): ValueSender<AddStoryRequest> = FakeValueSender("NotionStory")
+    override fun createAddNotionStory(): ValueSender<String> = FakeValueSender("NotionStory")
 }

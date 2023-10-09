@@ -32,7 +32,7 @@ class MockKtorEngine {
 
     val engine = MockEngine { request ->
         when (request.url.toString()) {
-            Endpoints.AddTaskNotion.URL -> handleAddTaskRequest(request)
+            Endpoints.GenericNotion.URL -> handleGenericRequest(request)
             Endpoints.AddTaskTickTick.URL -> handleAddTaskRequest(request)
             else -> throw IllegalStateException("URL not supported")
         }
@@ -43,6 +43,15 @@ class MockKtorEngine {
     ): HttpResponseData {
         val parsed = request.body.getJson()
         passedInTask = parsed.jsonObject["task"]!!.jsonPrimitive.content
+
+        return respondBasedOnResult()
+    }
+
+    private fun MockRequestHandleScope.handleGenericRequest(
+        request: HttpRequestData
+    ): HttpResponseData {
+        val parsed = request.body.getJson()
+        passedInTask = parsed.jsonObject["data"]!!.jsonObject["value"]!!.jsonPrimitive.content
 
         return respondBasedOnResult()
     }
